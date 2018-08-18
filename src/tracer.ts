@@ -1,8 +1,10 @@
 import * as Functions from './functions';
 import * as Noop from './noop';
 import Reference from './reference';
+import Scope from './scope';
 import Span from './span';
 import SpanContext from './span_context';
+import ScopeManager from './scope_manager';
 
 export interface SpanOptions {
 
@@ -51,6 +53,36 @@ export class Tracer {
     // ---------------------------------------------------------------------- //
     // OpenTracing API methods
     // ---------------------------------------------------------------------- //
+
+    /**
+     * @return the active Span. This is a shorthand for tracer.scopeManager().active().span(),
+     * and null will be returned if Scope#active() is null.
+     */
+    activeSpan(): Span | null {
+        const scope = this.scopeManager().active();
+        return scope ? scope.span() : null;
+    }
+
+    /**
+     * @return {ScopeManager} - the current ScopeManager, which may be a noop.
+     */
+    scopeManager(): ScopeManager {
+        return Noop.scopeManager!;
+    }
+
+    /**
+     * Returns a newly started and activated Scope.
+     *
+     * @param {string} name - the name of the operation
+     * @param {boolean} [finishOnClose=false] - whether span should automatically be finished
+     *        when Scope#close() is called.
+     * @param {SpanOptions} [options={}] - options for the newly created span.
+     * @return {Scope} - a Scope, already registered via the ScopeManager
+     */
+    startActive(name: string, finishOnClose: boolean = false, options: SpanOptions = {}): Scope {
+        const span = this.startSpan(name, options);
+        return this.scopeManager().activate(span, finishOnClose);
+    }
 
     /**
      * Starts and returns a new Span representing a logical unit of work.

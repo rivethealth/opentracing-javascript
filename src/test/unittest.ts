@@ -5,6 +5,7 @@ import apiCompatibilityChecks from './api_compatibility';
 import mocktracerImplementationTests from './mocktracer_implemenation';
 import noopImplementationTests from './noop_implementation';
 import opentracingAPITests from './opentracing_api';
+import {asyncHookManagerTests, zoneScopeManagerTests} from './scope_manager';
 
 import {MockTracer, Tracer} from '../index.js';
 
@@ -20,3 +21,7 @@ apiCompatibilityChecks( () => new Tracer (), {skipBaggageChecks: true});
 
 // Basic unittests for opentracing
 opentracingAPITests();
+
+// Scope manager tests
+asyncHookManagerTests();
+zoneScopeManagerTests();

@@ -27,6 +27,24 @@ function apiCompatibilityChecks(createTracer = () => new Tracer(), options: ApiC
         });
 
         describe('Tracer', () => {
+            describe('active', () => {
+                it('should get active span', () => {
+                    expect(tracer.activeSpan()).to.be.null;
+                });
+            });
+
+            describe('scopeManager', () => {
+                it('should get ScopeManager', () => {
+                    expect(tracer.scopeManager()).to.not.be.null;
+                });
+            });
+
+            describe('startActive', () => {
+                it('should start active Span', () => {
+                    expect(() => tracer.startActive('child', false, { childOf: span }).close()).to.not.throw(Error);
+                    expect(() => tracer.startActive('child', false, { childOf: span.context() }).close()).to.not.throw(Error);
+                });
+            });
 
             describe('startSpan', () => {
                 it('should handle Spans and SpanContexts', () => {

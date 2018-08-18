@@ -19,9 +19,14 @@ export {
     MockTracer
 };
 
+export * from './async_hook_scope_manager';
+export * from './base_scope';
 export * from './global_tracer';
 export * from './constants';
 export * from './functions';
+export * from './scope';
+export * from './scope_manager';
+export * from './zone_scope_manager';
 
 // Initialize the noops last to avoid a dependecy cycle between the classes.
 Noop.initialize();

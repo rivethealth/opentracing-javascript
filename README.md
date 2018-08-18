@@ -105,6 +105,36 @@ const tracer = opentracing.globalTracer();
 
 Note: `globalTracer()` returns a wrapper on the actual tracer object. This is done for the convenience of use as it ensures that the function will always return a non-null object.  This can be helpful in cases where it is difficult or impossible to know precisely when `initGlobalTracer` is called (for example, when writing a utility library that does not control the initialization process).  For more precise control, individual `Tracer` objects can be used instead of the global tracer.
 
+### Scope manager
+
+This library supports the [Scope Manager](https://github.com/opentracing/specification/blob/f7ca62c9/rfc/scope_manager.md) draft RFC.
+
+The `ZoneScopeManager` implementation relies on [Zone](https://github.com/domenic/zones), a ES TC39 proposal. An implementation of it is [Zone.js](https://github.com/angular/zone.js).
+
+```js
+import { ZoneScopeManager } from 'opentracing';
+
+const scopeManger = new ZoneScopeManager();
+Zone.current.fork(scopeManager.zoneSpec()).run(() => {
+    const scope = scopeManager.activate(span);
+    // ...
+    scope.close();
+});
+```
+
+The `AsyncHookScopeManager` implementation relies on [async_hooks](https://nodejs.org/api/async_hooks.html), present in Node.js 9+.
+
+```js
+import { AsyncHookScopeManager } from 'opentracing';
+
+const scopeManager = new AsyncHookScopeManager();
+scopeManager.hook().enable();
+const scope = scopeManger.activate(span);
+// ...
+scope.close();
+scopeManager.hook().disable();
+```
+
 ## API Documentation
 
 There is a hosted copy of the current generated [ESDoc API Documentation here](https://opentracing-javascript.surge.sh).
